@@ -20,6 +20,7 @@ android {
                     classNames.add("org.checkerframework.checker.keystore.KeyStoreChecker")
             // Uncomment to do the strongboxbacked checking.
             // javaCompileOptions.annotationProcessorOptions.arguments.put("lint", "strongboxbacked")
+            javaCompileOptions.annotationProcessorOptions.arguments.put("stubs", "hardwarebacked.astub")
         }
     }
     compileOptions {
@@ -49,10 +50,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
 
-    ext.checkerFrameworkVersion = '3.0.1'
+    ext.checkerFrameworkVersion = '3.1.1'
     annotationProcessor "org.checkerframework:keystore-checker:0.1-SNAPSHOT"
-    implementation files("/Users/yuanhuicheng/Documents/Projects/keystore-checker/keystore-checker-qual-android/build/libs/keystore-checker-qual-android.jar")
-    checkerFrameworkAnnotatedJDK "org.checkerframework:jdk8:${checkerFrameworkVersion}"
+    implementation files("../../../../keystore-checker-qual-android/build/libs/keystore-checker-qual-android.jar")
+    checkerFrameworkAnnotatedJDK files("../../../../jdk8.jar")
     compileOnly "org.checkerframework:checker-qual-android:${checkerFrameworkVersion}"
     errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
 }
@@ -70,9 +71,9 @@ apply from: 'https://raw.github.com/omadahealth/omada-nexus/master/gradle-mvn-pu
 gradle.projectsEvaluated {
     tasks.withType(JavaCompile).all { compile ->
         if (compile.name.contains("CheckTypes")) {
-//            compile.options.compilerArgs += [
-//                    "-Xbootclasspath/p:${configurations.checkerFrameworkAnnotatedJDK.asPath}"
-//            ]
+            compile.options.compilerArgs += [
+                    "-Xbootclasspath/p:${configurations.checkerFrameworkAnnotatedJDK.asPath}"
+            ]
             options.fork = true
             options.forkOptions.jvmArgs += ["-Xbootclasspath/p:${configurations.errorproneJavac.asPath}"]
         }
